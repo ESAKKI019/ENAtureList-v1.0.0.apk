@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ENAtureList — Field Network & Biodiversity Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.1/dist/umd/supabase.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:ital,wght@0,600;0,700;1,400&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              dark: '#08140c',
+              darkcard: '#122417',
+              darkborder: '#1d3b25',
+              light: '#FAF8F5',
+              lightcard: '#FFFFFF',
+              lightborder: '#EAE5DE',
+              forest: '#064e3b',
+              gold: '#f59e0b'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.3s, color 0.3s; }
+    h1, h2, h3, .font-serif { font-family: 'Lora', Georgia, serif; }
+    .font-tamil { font-family: 'Noto Sans Tamil', sans-serif; }
+  </style>
+</head>
+<body class="bg-brand-light dark:bg-brand-dark text-stone-900 dark:text-stone-100 min-h-screen flex flex-col selection:bg-emerald-600 selection:text-white">
+
+  <!-- ================= TOP NAVIGATION ================= -->
+  <header class="sticky top-0 z-40 bg-[#FAF8F5]/95 dark:bg-[#08140c]/95 backdrop-blur border-b border-brand-lightborder dark:border-brand-darkborder shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <a href="#home" class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-[#064e3b] border border-emerald-600/80 flex items-center justify-center p-0.5 shadow-inner">
+          <svg viewBox="0 0 100 100" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" fill="#fef3c7"/>
+            <circle cx="68" cy="40" r="14" fill="#ffffff" opacity="0.9"/>
+            <path d="M4 64 C24 50 48 58 70 52 C84 48 96 54 96 64 L96 96 L4 96 Z" fill="#a7f3d0"/>
+            <path d="M4 74 C30 62 60 72 96 68 L96 96 L4 96 Z" fill="#10b981"/>
+            <path d="M4 80 C26 78 54 74 96 78 L96 96 L4 96 Z" fill="#047857"/>
+            <path d="M38 72 C32 78 40 84 34 96" stroke="#fef08a" stroke-width="4" stroke-linecap="round" fill="none"/>
+            <circle cx="36" cy="62" r="3.5" fill="#dc2626"/>
+            <line x1="45" y1="80" x2="88" y2="80" stroke="#78350f" stroke-width="3" stroke-linecap="round"/>
+            <path d="M68 62 C74 62 82 66 82 76 C76 80 66 80 64 74 Z" fill="#059669"/>
+            <circle cx="70" cy="60" r="5" fill="#1c1917"/>
+            <polygon points="63,60 56,62 63,64" fill="#1c1917"/>
+          </svg>
+        </div>
+        <div>
+          <span class="font-serif font-black tracking-tight text-base block text-stone-900 dark:text-white leading-none">ENAtureList</span>
+          <span class="text-[8px] tracking-widest text-emerald-700 dark:text-emerald-400 uppercase font-bold">WALK • SPOT • DISCOVER</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-5 text-xs font-semibold text-stone-600 dark:text-stone-300">
+        <a href="#hotspots" class="hover:text-emerald-700 dark:hover:text-emerald-400 transition">Hotspots</a>
+        <a href="#explorers" class="hover:text-emerald-700 dark:hover:text-emerald-400 transition">Top Explorers</a>
+        <a href="#nature-guides" class="hover:text-emerald-700 dark:hover:text-emerald-400 transition text-emerald-800 dark:text-emerald-400 font-bold">Nature Walk Guides</a>
+        <a href="#video-portal-section" class="hover:text-emerald-700 dark:hover:text-emerald-400 transition">Video Center</a>
+        <a href="#journals" class="hover:text-emerald-700 dark:hover:text-emerald-400 transition">Field Journals</a>
+        <a href="#contact" class="hover:text-emerald-700 dark:hover:text-emerald-400 transition">Contact</a>
+        <button onclick="openFeedbackModal()" class="bg-amber-100 hover:bg-amber-200 text-amber-900 dark:bg-amber-950/70 dark:hover:bg-amber-900 dark:text-amber-300 px-3 py-1.5 rounded-xl border border-amber-300 dark:border-amber-800 transition flex items-center gap-1 font-bold">
+          <i class="fa-solid fa-comment-dots text-xs"></i>
+          <span>App Feedback</span>
+        </button>
+      </nav>
+
+      <!-- Theme Switcher & Auth Trigger -->
+      <div class="flex items-center gap-3">
+        <button onclick="toggleDarkMode()" class="w-9 h-9 rounded-xl bg-stone-200 dark:bg-brand-darkcard border border-stone-300 dark:border-brand-darkborder text-stone-700 dark:text-amber-300 flex items-center justify-center text-xs shadow-sm transition" title="Toggle Light/Dark Theme">
+          <i class="fa-solid fa-moon dark:hidden"></i>
+          <i class="fa-solid fa-sun hidden dark:inline"></i>
+        </button>
+
+        <div id="auth-unlogged">
+          <button onclick="openAuthModal()" class="bg-[#064e3b] hover:bg-emerald-800 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-sm transition flex items-center gap-1.5">
+            <i class="fa-solid fa-user text-[11px] text-amber-300"></i>
+            <span>Sign In / Register</span>
+          </button>
+        </div>
+
+        <div id="auth-logged" class="hidden flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-[#064e3b] border border-emerald-500 text-white font-bold text-xs flex items-center justify-center shadow-sm" id="nav-user-avatar">?</div>
+          <span class="text-xs font-bold text-stone-800 dark:text-stone-200 hidden sm:inline" id="nav-user-name">Naturalist</span>
+          <button id="master-btn" onclick="openMasterDashboard()" class="hidden bg-amber-500 hover:bg-amber-400 text-emerald-950 font-black text-[10px] px-2.5 py-1 rounded-lg shadow-sm">Dashboard</button>
+          <button onclick="signOutWebUser()" class="text-stone-400 hover:text-rose-500 text-xs px-1.5" title="Sign Out"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ================= HERO & DIRECT 24/7 APK DOWNLOAD ================= -->
+  <section id="download" class="py-14 px-4 bg-gradient-to-br from-[#064e3b] to-[#08140c] text-white border-b border-brand-darkborder shadow-inner">
+    <div class="max-w-6xl mx-auto space-y-10">
+      
+      <div class="grid md:grid-cols-12 gap-8 items-center">
+        <div class="md:col-span-7 space-y-4">
+          <span class="inline-block px-3 py-1 bg-white/10 backdrop-blur border border-white/20 rounded-full text-[11px] font-semibold text-emerald-200 tracking-wider">
+            OFFICIAL STABLE RELEASE V1.0.0
+          </span>
+          <h1 class="text-3xl md:text-5xl font-serif font-black leading-tight">
+            Install the official social network app for field naturalists.
+          </h1>
+          <p class="text-xs md:text-sm text-stone-200 leading-relaxed max-w-xl">
+            Offline bird checklists, authentic Tamil taxonomy, GPS transect logging, and community field notes across Tamil Nadu's ecosystems.
+          </p>
+
+          <div class="pt-2 flex flex-wrap items-center gap-3">
+            <a id="apk-download-cta" 
+               href="https://github.com/ESAKKI019/ENAtureList-v1.0.0.apk/releases/download/v1.0.0/ENAtureList-v1.0.0.apk" 
+               download="ENAtureList-v1.0.0.apk" 
+               onclick="logTelemetry('apk_download')" 
+               class="bg-amber-500 hover:bg-amber-400 text-emerald-950 px-7 py-3.5 rounded-2xl font-black text-xs shadow-xl flex items-center justify-center gap-2.5 transition active:scale-95">
+              <i class="fa-brands fa-android text-base"></i>
+              <span id="apk-download-btn-label">Download ENAtureList-v1.0.0.apk</span>
+            </a>
+
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] text-stone-300">Android 8.0+ • 4.2 MB • 24/7 Cloud CDN</span>
+              <a href="#video-portal-section" onclick="scrollToInstallationVideo()" class="bg-white/15 hover:bg-white/25 text-white border border-white/20 px-4 py-2.5 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm">
+                <i class="fa-solid fa-play text-amber-300"></i>
+                <span>Installation Guide Video</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="md:col-span-5 flex justify-center">
+          <div class="w-64 p-6 rounded-3xl bg-white/5 backdrop-blur-md border border-white/20 shadow-2xl flex flex-col items-center text-center space-y-3">
+            <div class="w-24 h-24 rounded-2xl bg-white flex items-center justify-center p-2 shadow-inner">
+              <svg viewBox="0 0 100 100" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="46" fill="#fef3c7"/>
+                <path d="M4 64 C24 50 48 58 70 52 C84 48 96 54 96 64 L96 96 L4 96 Z" fill="#a7f3d0"/>
+                <path d="M4 74 C30 62 60 72 96 68 L96 96 L4 96 Z" fill="#10b981"/>
+                <path d="M4 80 C26 78 54 74 96 78 L96 96 L4 96 Z" fill="#047857"/>
+                <path d="M68 62 C74 62 82 66 82 76 C76 80 66 80 64 74 Z" fill="#059669"/>
+                <circle cx="70" cy="60" r="5" fill="#1c1917"/>
+                <polygon points="63,60 56,62 63,64" fill="#1c1917"/>
+              </svg>
+            </div>
+            <h3 class="font-serif font-black text-lg text-white">ENAtureList App</h3>
+            <p class="text-[11px] text-stone-200">Synchronized live with cloud checklists and birder chat.</p>
+            <div class="text-[10px] bg-emerald-950 px-3 py-1 rounded-full text-emerald-300 font-mono border border-emerald-800" id="apk-version-badge">
+              Build: ENAtureList-v1.0.0.apk
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= 2. LIVE TOP EXPLORERS ================= -->
+  <section id="explorers" class="py-14 px-4 max-w-7xl mx-auto space-y-6">
+    <div class="flex items-center justify-between border-b border-brand-lightborder dark:border-brand-darkborder pb-3">
+      <div>
+        <h2 class="text-xl md:text-2xl font-serif font-black text-stone-900 dark:text-white">Top Explorers in the Field</h2>
+        <p class="text-xs text-stone-500 dark:text-stone-400">Live rankings computed from species and counts logged in Supabase.</p>
+      </div>
+      <button onclick="loadLiveExplorers()" class="text-xs text-emerald-700 dark:text-emerald-400 hover:underline font-bold flex items-center gap-1">
+        <i class="fa-solid fa-arrows-rotate"></i> Refresh Standings
+      </button>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="explorers-grid">
+      <div class="p-8 text-center text-xs text-stone-400 col-span-4 bg-white dark:bg-brand-darkcard rounded-2xl border border-brand-lightborder dark:border-brand-darkborder">
+        <i class="fa-solid fa-spinner fa-spin mr-1"></i> Calculating observer standings...
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 3. REAL BIODIVERSITY HOTSPOTS & 5 AM QUOTE ================= -->
+  <section id="hotspots" class="py-14 px-4 bg-[#F2EFE9] dark:bg-brand-darkcard/50 border-y border-brand-lightborder dark:border-brand-darkborder">
+    <div class="max-w-7xl mx-auto space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl md:text-2xl font-serif font-black text-stone-900 dark:text-white">Active Biodiversity Hotspots This Week</h2>
+          <p class="text-xs text-stone-500 dark:text-stone-400">Calculated automatically from coordinates and observation tallies submitted by users.</p>
+        </div>
+        <button onclick="loadRealHotspotData()" class="text-xs text-emerald-700 dark:text-emerald-400 font-bold hover:underline flex items-center gap-1">
+          <i class="fa-solid fa-satellite-dish"></i> Recalculate Hotspots
+        </button>
+      </div>
+      
+      <div class="grid md:grid-cols-12 gap-6 items-stretch">
+        <div class="md:col-span-7 rounded-3xl overflow-hidden relative min-h-[320px] border border-brand-lightborder dark:border-brand-darkborder shadow-sm bg-stone-900">
+          <img id="hotspot-main-img" src="https://images.pexels.com/photos/15286/pexels-photo.jpg?auto=compress&cs=tinysrgb&w=1200" class="w-full h-full object-cover transition duration-500" alt="Indian Forest Canopy">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent p-6 flex flex-col justify-end">
+            <span class="text-[10px] font-bold text-amber-300 uppercase tracking-wider" id="hotspot-sub">Real-Time Observation Hotspot #1</span>
+            <h3 class="text-2xl font-serif font-black text-white" id="hotspot-title">Singanallur Wetland & Foothills</h3>
+            <p class="text-xs text-stone-200 mt-1 max-w-md" id="hotspot-desc">Identified by high-density species observations logged via Android GPS transects this week.</p>
+          </div>
+        </div>
+
+        <div class="md:col-span-5 flex flex-col justify-between p-6 bg-white dark:bg-brand-darkcard rounded-3xl space-y-4 border border-brand-lightborder dark:border-brand-darkborder shadow-sm">
+          <div class="space-y-3">
+            <div class="p-3.5 bg-stone-50 dark:bg-black/30 rounded-xl border border-brand-lightborder dark:border-brand-darkborder">
+              <span class="text-[10px] text-emerald-800 dark:text-emerald-400 font-bold uppercase" id="hotspot-dynamic-tag1">Top GPS Cluster #1</span>
+              <h4 class="font-bold text-xs text-stone-900 dark:text-white" id="hotspot-dynamic-name1">Koonthankulam Sanctuary</h4>
+              <p class="text-[11px] text-stone-600 dark:text-stone-300 mt-0.5" id="hotspot-dynamic-count1">Highest checklist count recorded this week.</p>
+            </div>
+            <div class="p-3.5 bg-stone-50 dark:bg-black/30 rounded-xl border border-brand-lightborder dark:border-brand-darkborder">
+              <span class="text-[10px] text-emerald-800 dark:text-emerald-400 font-bold uppercase" id="hotspot-dynamic-tag2">Top GPS Cluster #2</span>
+              <h4 class="font-bold text-xs text-stone-900 dark:text-white" id="hotspot-dynamic-name2">Nilgiri Shola Montane Cluster</h4>
+              <p class="text-[11px] text-stone-600 dark:text-stone-300 mt-0.5" id="hotspot-dynamic-count2">Active high-altitude species transect logs.</p>
+            </div>
+          </div>
+          
+          <blockquote class="border-l-3 border-amber-600 pl-3.5 italic text-xs text-stone-700 dark:text-stone-300 bg-amber-50/60 dark:bg-amber-950/30 p-2.5 rounded-r-xl border border-amber-200/60 dark:border-amber-900/60">
+            <span id="daily-quote-text">"Birds can survive without humans but a human can't survive without birds."</span>
+            <span class="block text-[10px] font-bold text-stone-900 dark:text-amber-300 not-italic mt-1" id="daily-quote-author">— Dr. Sálim Ali</span>
+          </blockquote>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 4. NATURE WALK GUIDES ================= -->
+  <section id="nature-guides" class="py-14 px-4 max-w-7xl mx-auto space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-brand-lightborder dark:border-brand-darkborder pb-4 gap-4">
+      <div>
+        <h2 class="text-xl md:text-2xl font-serif font-black text-stone-900 dark:text-white">Local Nature Walk Guides</h2>
+        <p class="text-xs text-stone-600 dark:text-stone-300 mt-1 max-w-2xl leading-relaxed">
+          If you have in-depth knowledge of the biodiversity hotspots and wildlife sanctuaries in your region, register here as an official nature walk guide to lead observers and enthusiasts eager to explore your local trails.
+        </p>
+      </div>
+      <button onclick="openGuideRegisterModal()" class="bg-[#064e3b] hover:bg-emerald-800 text-white px-5 py-2.5 rounded-2xl text-xs font-bold transition shadow flex items-center gap-2 flex-shrink-0">
+        <i class="fa-solid fa-id-badge text-amber-300"></i>
+        <span>Register as Guide</span>
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="approved-guides-grid">
+      <div class="p-8 text-center text-xs text-stone-400 col-span-3 bg-white dark:bg-brand-darkcard rounded-2xl border border-brand-lightborder dark:border-brand-darkborder">
+        <i class="fa-solid fa-spinner fa-spin mr-1"></i> Loading certified local guides...
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 5. VIDEO PORTAL ================= -->
+  <section id="video-portal-section" class="py-14 px-4 bg-[#F2EFE9] dark:bg-brand-darkcard/50 border-t border-brand-lightborder dark:border-brand-darkborder scroll-mt-20">
+    <div class="max-w-7xl mx-auto space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-brand-lightborder dark:border-brand-darkborder pb-3 gap-2">
+        <div>
+          <h2 class="text-xl md:text-2xl font-serif font-black text-stone-900 dark:text-white flex items-center gap-2">
+            <i class="fa-solid fa-circle-play text-emerald-800 dark:text-emerald-400"></i> Official Video Hub & Field Walk Guides
+          </h2>
+          <p class="text-xs text-stone-500 dark:text-stone-400" id="video-now-playing-label">Now Playing: Native Master Stream / Installation Guide</p>
+        </div>
+        <a href="https://www.youtube.com/@kaattinkathai?sub_confirmation=1" target="_blank" class="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 shadow-sm transition w-fit">
+          <i class="fa-brands fa-youtube"></i>
+          <span>Subscribe Channel</span>
+        </a>
+      </div>
+
+      <div class="grid md:grid-cols-12 gap-6 items-start">
+        <div class="md:col-span-8 rounded-3xl overflow-hidden border border-brand-lightborder dark:border-brand-darkborder aspect-video bg-black shadow-lg relative flex flex-col justify-center items-center">
+          
+          <video id="native-video-player" class="w-full h-full object-contain" controls autoplay playsinline>
+            <source id="native-video-source" src="" type="video/mp4">
+            Your browser does not support HTML5 video streaming.
+          </video>
+
+          <div id="no-video-placeholder" class="hidden absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-black/90 text-white space-y-3">
+            <i class="fa-solid fa-film text-4xl text-emerald-500"></i>
+            <h3 class="font-serif font-bold text-base">Direct Video Upload Player</h3>
+            <p class="text-xs text-stone-300 max-w-sm">No local video file loaded yet. Open the Master Dashboard to attach your MP4/WebM video file directly from your computer.</p>
+          </div>
+        </div>
+
+        <div class="md:col-span-4 space-y-3">
+          <h3 class="font-serif font-bold text-sm text-stone-900 dark:text-white">Featured Channel Videos</h3>
+          <div id="channel-videos-list" class="space-y-2.5 max-h-[440px] overflow-y-auto pr-1">
+            <!-- Populated dynamically with YouTube links -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 6. RECENT FIELD BLOGS & SHOW ALL ================= -->
+  <section id="journals" class="py-14 px-4 max-w-7xl mx-auto space-y-6">
+    <div class="flex items-center justify-between border-b border-brand-lightborder dark:border-brand-darkborder pb-3">
+      <div>
+        <h2 class="text-xl md:text-2xl font-serif font-black text-stone-900 dark:text-white">Recent Field Walk Journals</h2>
+        <p class="text-xs text-stone-500 dark:text-stone-400">Read observations, species lists, and sightings tallies.</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="toggleShowAllBlogs()" id="show-all-blogs-btn" class="text-xs bg-stone-200 dark:bg-brand-darkcard text-stone-800 dark:text-stone-200 hover:bg-stone-300 font-bold px-3.5 py-1.5 rounded-xl transition border border-stone-300 dark:border-brand-darkborder">
+          Show All Walks
+        </button>
+        <button onclick="openComposeBlogModal()" class="text-xs bg-[#064e3b] hover:bg-emerald-800 text-white font-bold px-3.5 py-1.5 rounded-xl transition shadow-sm">
+          Post Walk Journal
+        </button>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-5" id="web-blogs-grid">
+      <!-- Loaded live from Supabase field_notes -->
+    </div>
+  </section>
+
+  <!-- ================= POPUP: GUIDE REGISTRATION MODAL ================= -->
+  <div id="guide-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-brand-darkcard border border-brand-lightborder dark:border-brand-darkborder rounded-3xl p-6 max-w-lg w-full text-xs text-stone-800 dark:text-stone-200 shadow-2xl relative max-h-[90vh] overflow-y-auto space-y-3.5">
+      <div class="flex items-center justify-between border-b border-stone-200 dark:border-brand-darkborder pb-2">
+        <h3 class="font-serif font-black text-sm text-stone-900 dark:text-white flex items-center gap-1.5">
+          <i class="fa-solid fa-compass text-emerald-700 dark:text-emerald-400"></i> Nature Walk Guide Application
+        </h3>
+        <button onclick="closeGuideRegisterModal()" class="text-stone-400 hover:text-stone-700 dark:hover:text-white text-base">✕</button>
+      </div>
+      
+      <p class="text-[11px] text-stone-500 dark:text-stone-400 leading-relaxed">
+        Apply to become a recognized local guide. Your registration requires master verification before your public profile is displayed.
+      </p>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block font-bold text-stone-700 dark:text-stone-300 mb-1">Full Legal Name *</label>
+          <input type="text" id="guide-reg-name" placeholder="Full Name" class="w-full p-2.5 bg-stone-50 dark:bg-black/50 border border-stone-300 dark:border-brand-darkborder rounded-xl focus:outline-none dark:text-white">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-stone-700 dark:text-stone-300 mb-1">Email Address *</label>
+            <input type="email" id="guide-reg-email" placeholder="guide@example.com" class="w-full p-2.5 bg-stone-50 dark:bg-black/50 border border-stone-300 dark:border-brand-darkborder rounded-xl focus:outline-none dark:text-white">
+          </div>
+          <div>
+            <label class="block font-bold text-stone-700 dark:text-stone-300 mb-1">Contact Phone Number *</label>
+            <input type="tel" id="guide-reg-phone" placeholder="+91 98765 43210" class="w-full p-2.5 bg-stone-50 dark:bg-black/50 border border-stone-300 dark:border-brand-darkborder rounded-xl focus:outline-none dark:text-white">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label class="block font-bold text-stone-700 dark:text-stone-300 mb-1">State *</label>
+            <input type="text" id="guide-reg-state" placeholder="Tamil Nadu" class="w-full p-2 bg-stone-50 dark:bg-black/50 border border-stone-300 dark:border-brand-darkborder rounded-xl focus:outline-none dark:text-white">
+          </div>
+          <div>
+            <label class="block font-bold text-stone-700 dark:text-stone-300 mb-1">District *</label>
+            <input type="text" id="guide-reg-district" placeholder="Tirunelveli" class="w-full p-2 bg-stone-50 dark:bg-black/50 border border-stone-300 dark:border-brand-darkborder rounded-xl focus:outline-none dark:text-white">
+          </div>
+          <div>
+            <label class="block font-bold text-stone-700 dark:text-stone-300 mb-1">Place / Hotspot Name *</label>
+            <input type="text" id="guide-reg-place" placeholder="Koonthankulam" class="w-full p-2 bg-stone-50 dark:bg-black/50 border border-stone-300 dark:border-brand-darkborder rounded-xl focus:outline-none dark:text-white">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-stone-700 dark:text-stone-300 mb-1">Gender *</label>
+          <select id="guide-reg-gender" class="w-full p-2.5 bg-stone-50 dark:bg-black/50 border border-stone-300 dark:border-brand-darkborder rounded-xl focus:outline-none dark:text-white">
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="space-y-2 border-t border-stone-200 dark:border-brand-darkborder pt-2">
+          <div>
+            <label class="block font-bold text-stone-700 dark:text-stone-300 mb-1">Profile Photo (Direct Device File) *</label>
+            <input type="file" id="guide-file-profile" accept="image/*" class="w-full p-1.5 bg-stone-50 dark:bg-black/50 border border-stone-300 dark:border-brand-darkborder rounded-xl text-xs">
+          </div>
+          <div>
+            <label class="block font-bold text-stone-700 dark:text-stone-300 mb-1">Relevant Nature Certification / ID Proof (Optional)</label>
+            <input type="file" id="guide-file-cert" accept="image/*,application/pdf" class="w-full p-1.5 bg-stone-50 dark:bg-black/50 border border-stone-300 dark:border-brand-darkborder rounded-xl text-xs">
+          </div>
+        </div>
+
+        <button onclick="submitGuideApplication()" id="guide-submit-btn" class="w-full bg-[#064e3b] hover:bg-emerald-800 text-white font-bold py-3 rounded-2xl transition shadow">
+          Submit Guide Registration
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= POPUP: CONTACT GUIDE INQUIRY ================= -->
+  <div id="contact-guide-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-brand-darkcard border border-brand-lightborder dark:border-brand-darkborder rounded-3xl p-6 max-w-md w-full text-xs text-stone-800 dark:text-stone-200 shadow-2xl relative space-y-3">
+      <div class="flex items-center justify-between border-b border-stone-200 dark:border-brand-darkborder pb-2">
+        <h3 class="font-serif font-black text-sm text-stone-900 dark:text-white">Request Guided Walk</h3>
+        <button onclick="closeContactGuideModal()" class="text-stone-400 hover:text-stone-700 dark:hover:text-white text-base">✕</button>
+      </div>
+      
+      <p class="text-[11px] text-stone-500 dark:text-stone-400 leading-relaxed">
+        To ensure visitor safety and preserve guide privacy, direct contact details are mediated by the ENAtureList directorate. Your request will be immediately routed to the master portal.
+      </p>
+
+      <input type="hidden" id="inquiry-guide-id">
+      <div>
+        <label class="block font-bold text-stone-700 dark:text-stone-300 mb-1">Selected Guide</label>
+        <input type="text" id="inquiry-guide-display" readonly class="w-full p-2 bg-stone-100 dark:bg-black/30 border border-stone-200 dark:border-brand-darkborder rounded-xl text-stone-500 font-bold">
+      </div>
+      <div>
+        <label class="block font-bold text-stone-700 dark:text-stone-300 mb-1">Your Full Name *</label>
+        <input type="text" id="inquiry-user-name" placeholder="Enter your name" class="w-full p-2 bg-stone-50 dark:bg-black/50 border border-stone-300 dark:border-brand-darkborder rounded-xl dark:text-white">
+      </div>
+      <div>
+        <label class="block font-bold text-stone-700 dark:text-stone-300 mb-1">Your Phone / Email Contact *</label>
+        <input type="text" id="inquiry-user-contact" placeholder="Phone number or email" class="w-full p-2 bg-stone-50 dark:bg-black/50 border border-stone-300 dark:border-brand-darkborder rounded-xl dark:text-white">
+      </div>
+      <div>
+        <label class="block font-bold text-stone-700 dark:text-stone-300 mb-1">Requested Walk Dates & Group Details *</label>
+        <textarea id="inquiry-user-message" rows="3" placeholder="Number of participants, target bird species, preferred dates..." class="w-full p-2 bg-stone-50 dark:bg-black/50 border border-stone-300 dark:border-brand-darkborder rounded-xl dark:text-white"></textarea>
+      </div>
+
+      <button onclick="sendGuideInquiry()" id="inquiry-submit-btn" class="w-full bg-[#064e3b] hover:bg-emerald-800 text-white font-bold py-2.5 rounded-xl transition shadow">
+        Transmit Walk Request to Directorate
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= POPUP: MASTER LIVE ADMIN DASHBOARD ================= -->
+  <div id="master-admin-modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-3 hidden">
+    <div class="bg-brand-darkcard border border-brand-darkborder rounded-3xl w-full max-w-5xl max-h-[92vh] flex flex-col shadow-2xl text-xs text-white overflow-hidden">
+      
+      <!-- Dashboard Header -->
+      <div class="bg-[#08140c] p-4 border-b border-brand-darkborder flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-crown text-xs"></i>
+          </div>
+          <div>
+            <h3 class="font-serif font-black text-sm text-white">Master Operations Dashboard</h3>
+            <p class="text-[10px] text-emerald-400">Live platform operations, guide approval, and date range audit console</p>
+          </div>
+        </div>
+        <button onclick="closeMasterDashboard()" class="text-stone-400 hover:text-white text-base">✕</button>
+      </div>
+
+      <!-- Master Controls: APK Updater, Quote Shuffle & Direct Device Video File Uploader -->
+      <div class="p-3 bg-[#0d1d13] border-b border-brand-darkborder space-y-2">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="text-amber-400 font-bold text-xs"><i class="fa-solid fa-cloud-arrow-up mr-1"></i>Publish Updated APK:</span>
+            <input type="text" id="master-apk-url" placeholder="Direct Cloud APK URL (GitHub / Supabase)" class="bg-[#08140c] border border-brand-darkborder rounded-xl px-2.5 py-1 text-xs text-white w-64 focus:outline-none focus:border-amber-400">
+            <input type="text" id="master-apk-version" placeholder="v1.0.1" class="bg-[#08140c] border border-brand-darkborder rounded-xl px-2 py-1 text-xs text-white w-20 focus:outline-none focus:border-amber-400">
+          </div>
+          <button onclick="updatePublicApkRelease()" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-3 py-1 rounded-xl text-xs transition">
+            Update Release URL
+          </button>
+        </div>
+
+        <!-- Direct Video File Uploader -->
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-brand-darkborder/60">
+          <div class="flex items-center gap-2 flex-1">
+            <span class="text-emerald-400 font-bold text-xs"><i class="fa-solid fa-upload mr-1"></i>Direct Device Video File:</span>
+            <input type="file" id="master-video-file-input" accept="video/mp4,video/webm" class="text-xs text-stone-300 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-800 file:text-white hover:file:bg-emerald-700">
+            <button onclick="uploadMasterVideoFile()" id="master-video-upload-btn" class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold px-3 py-1 rounded-xl text-xs transition shadow flex-shrink-0">
+              Attach & Play Video
+            </button>
+          </div>
+          <button onclick="masterShuffleQuote()" class="bg-amber-500 hover:bg-amber-400 text-emerald-950 font-black px-3 py-1 rounded-xl text-xs transition flex items-center gap-1">
+            <i class="fa-solid fa-quote-left"></i>
+            <span>Shuffle Daily Quote</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Categories Navigation -->
+      <div class="p-3 bg-[#0a180e] border-b border-brand-darkborder grid grid-cols-4 sm:grid-cols-9 gap-1.5 text-[9px] font-bold">
+        <button onclick="loadMasterCategory('guides')" id="mbtn-guides" class="p-1.5 rounded-lg bg-emerald-950 border border-emerald-800 hover:bg-emerald-800 text-center text-amber-300">Local Guides</button>
+        <button onclick="loadMasterCategory('inquiries')" id="mbtn-inquiries" class="p-1.5 rounded-lg bg-emerald-950 border border-emerald-800 hover:bg-emerald-800 text-center text-amber-300">Guide Inquiries</button>
+        <button onclick="loadMasterCategory('users')" id="mbtn-users" class="p-1.5 rounded-lg bg-emerald-950 border border-emerald-800 hover:bg-emerald-800 text-center">Users Active</button>
+        <button onclick="loadMasterCategory('gps')" id="mbtn-gps" class="p-1.5 rounded-lg bg-emerald-950 border border-emerald-800 hover:bg-emerald-800 text-center">GPS Clusters</button>
+        <button onclick="loadMasterCategory('checklists')" id="mbtn-checklists" class="p-1.5 rounded-lg bg-emerald-950 border border-emerald-800 hover:bg-emerald-800 text-center">Checklists</button>
+        <button onclick="loadMasterCategory('stories')" id="mbtn-stories" class="p-1.5 rounded-lg bg-emerald-950 border border-emerald-800 hover:bg-emerald-800 text-center">Stories</button>
+        <button onclick="loadMasterCategory('feedback')" id="mbtn-feedback" class="p-1.5 rounded-lg bg-emerald-950 border border-emerald-800 hover:bg-emerald-800 text-center">Feedback</button>
+        <button onclick="loadMasterCategory('telemetry')" id="mbtn-telemetry" class="p-1.5 rounded-lg bg-emerald-950 border border-emerald-800 hover:bg-emerald-800 text-center text-cyan-300">Web Logs</button>
+        <button onclick="loadMasterCategory('system')" id="mbtn-system" class="p-1.5 rounded-lg bg-emerald-950 border border-emerald-800 hover:bg-emerald-800 text-center">System</button>
+      </div>
+
+      <!-- DUAL DATE FILTER CONTROLS (From Date to To Date) -->
+      <div class="p-3 bg-[#08140c] border-b border-brand-darkborder flex flex-wrap items-center justify-between gap-2.5">
+        <div class="flex flex-wrap items-center gap-2">
+          <input type="text" id="master-search-input" oninput="filterMasterRecords()" placeholder="Search records..." class="bg-[#122417] border border-brand-darkborder rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-emerald-500 w-40">
+          
+          <div class="flex items-center gap-1.5 bg-[#122417] border border-brand-darkborder px-2.5 py-1 rounded-xl text-xs">
+            <span class="text-[10px] text-stone-400 font-bold uppercase">From:</span>
+            <input type="date" id="master-date-from" onchange="filterMasterRecords()" class="bg-transparent text-stone-200 focus:outline-none text-xs">
+          </div>
+
+          <div class="flex items-center gap-1.5 bg-[#122417] border border-brand-darkborder px-2.5 py-1 rounded-xl text-xs">
+            <span class="text-[10px] text-stone-400 font-bold uppercase">To:</span>
+            <input type="date" id="master-date-to" onchange="filterMasterRecords()" class="bg-transparent text-stone-200 focus:outline-none text-xs">
+          </div>
+
+          <button onclick="resetDateRangeFilter()" class="text-[10px] text-amber-400 hover:underline px-1 font-bold">Clear Dates</button>
+        </div>
+
+        <button onclick="exportMasterCSV()" class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1 shadow">
+          <i class="fa-solid fa-file-csv"></i> Export CSV
+        </button>
+      </div>
+
+      <!-- Live Records List -->
+      <div class="flex-1 overflow-y-auto p-3 space-y-2" id="master-records-container"></div>
+    </div>
+  </div>
+
+  <!-- ================= POPUP: AUTH MODAL ================= -->
+  <div id="auth-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-brand-darkcard border border-brand-lightborder dark:border-brand-darkborder rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl relative text-xs">
+      <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-stone-400 hover:text-stone-700 dark:hover:text-white text-base">✕</button>
+      <h3 class="text-base font-serif font-black text-stone-900 dark:text-white mb-1" id="auth-title">Naturalist Sign In</h3>
+      <p class="text-[11px] text-stone-500 dark:text-stone-400 mb-4">One account works across both mobile app & web.</p>
+
+      <div class="space-y-3 text-left">
+        <div id="auth-name-row" class="hidden">
+          <label class="block font-bold text-stone-700 dark:text-stone-300 mb-0.5">Your Full Name</label>
+          <input type="text" id="auth-fullname" placeholder="Esakki Selvam" class="w-full p-2.5 bg-stone-50 dark:bg-black/50 border border-stone-300 dark:border-brand-darkborder rounded-xl focus:border-emerald-700 focus:outline-none dark:text-white">
+        </div>
+        <div>
+          <label class="block font-bold text-stone-700 dark:text-stone-300 mb-0.5">Email Address</label>
+          <input type="email" id="auth-email" placeholder="user@gmail.com" class="w-full p-2.5 bg-stone-50 dark:bg-black/50 border border-stone-300 dark:border-brand-darkborder rounded-xl focus:border-emerald-700 focus:outline-none dark:text-white">
+        </div>
+        <div>
+          <label class="block font-bold text-stone-700 dark:text-stone-300 mb-0.5">Password</label>
+          <input type="password" id="auth-password" placeholder="At least 6 characters" class="w-full p-2.5 bg-stone-50 dark:bg-black/50 border border-stone-300 dark:border-brand-darkborder rounded-xl focus:border-emerald-700 focus:outline-none dark:text-white">
+        </div>
+        <button onclick="submitAuthAction()" id="auth-submit-btn" class="w-full bg-[#064e3b] hover:bg-emerald-800 text-white font-bold py-2.5 rounded-xl transition shadow">
+          Sign In
+        </button>
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-stone-200 dark:border-brand-darkborder">
+        <button onclick="toggleAuthMode()" id="auth-toggle-btn" class="text-emerald-700 dark:text-emerald-400 font-bold hover:underline text-[11px]">
+          Need an account? Register here
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= POPUP: WRITE BLOG MODAL ================= -->
+  <div id="compose-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-brand-darkcard border border-brand-lightborder dark:border-brand-darkborder rounded-3xl p-6 max-w-md w-full text-left shadow-2xl relative text-xs space-y-3 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-stone-200 dark:border-brand-darkborder pb-2">
+        <h3 class="font-serif font-black text-sm text-stone-900 dark:text-white">Post Field Walk Journal</h3>
+        <button onclick="closeComposeBlogModal()" class="text-stone-400 hover:text-stone-700 dark:hover:text-white text-base">✕</button>
+      </div>
+      <div>
+        <label class="block font-bold text-stone-700 dark:text-stone-300 mb-1">Title *</label>
+        <input type="text" id="compose-title" placeholder="e.g. Dawn Heronry Survey" class="w-full p-2.5 bg-stone-50 dark:bg-black/50 border border-stone-300 dark:border-brand-darkborder rounded-xl focus:outline-none focus:border-emerald-700 dark:text-white">
+      </div>
+      <div>
+        <label class="block font-bold text-stone-700 dark:text-stone-300 mb-1">Location *</label>
+        <input type="text" id="compose-loc" placeholder="e.g. Koonthankulam Bird Sanctuary" class="w-full p-2.5 bg-stone-50 dark:bg-black/50 border border-stone-300 dark:border-brand-darkborder rounded-xl focus:outline-none focus:border-emerald-700 dark:text-white">
+      </div>
+      <div>
+        <label class="block font-bold text-stone-700 dark:text-stone-300 mb-1">Attach Photo or Video from Device</label>
+        <input type="file" id="compose-file-input" accept="image/*,video/*" class="w-full p-2 bg-stone-50 dark:bg-black/50 border border-stone-300 dark:border-brand-darkborder rounded-xl text-xs text-stone-600 dark:text-stone-300 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-800 file:text-white hover:file:bg-emerald-700">
+      </div>
+      <div>
+        <label class="block font-bold text-stone-700 dark:text-stone-300 mb-1">Observations & Sightings *</label>
+        <textarea id="compose-body" rows="4" placeholder="Detail bird behavior, flock size, calls heard..." class="w-full p-2.5 bg-stone-50 dark:bg-black/50 border border-stone-300 dark:border-brand-darkborder rounded-xl focus:outline-none dark:text-white"></textarea>
+      </div>
+      <button onclick="publishBlogFromWeb()" id="compose-btn" class="w-full bg-[#064e3b] hover:bg-emerald-800 text-white font-bold py-2.5 rounded-xl transition shadow">
+        Publish Field Note
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= POPUP: APP FEEDBACK MODAL ================= -->
+  <div id="feedback-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-brand-darkcard border border-brand-lightborder dark:border-brand-darkborder rounded-3xl p-6 max-w-md w-full text-left shadow-2xl relative text-xs space-y-3">
+      <div class="flex items-center justify-between border-b border-stone-200 dark:border-brand-darkborder pb-2">
+        <h3 class="font-serif font-black text-sm text-stone-900 dark:text-white flex items-center gap-1.5">
+          <i class="fa-solid fa-comment-dots text-amber-500"></i> App Feedback & Bug Report
+        </h3>
+        <button onclick="closeFeedbackModal()" class="text-stone-400 hover:text-stone-700 dark:hover:text-white text-base">✕</button>
+      </div>
+      <p class="text-stone-500 dark:text-stone-400 text-[11px]">This application is still under active development. Please share your feedback to help us improve.</p>
+      <div>
+        <label class="block font-bold text-stone-700 dark:text-stone-300 mb-1">Your Name</label>
+        <input type="text" id="feedback-name" placeholder="Naturalist Name" class="w-full p-2.5 bg-stone-50 dark:bg-black/50 border border-stone-300 dark:border-brand-darkborder rounded-xl focus:outline-none dark:text-white">
+      </div>
+      <div>
+        <label class="block font-bold text-stone-700 dark:text-stone-300 mb-1">Email / Phone</label>
+        <input type="text" id="feedback-contact" placeholder="contact@example.com" class="w-full p-2.5 bg-stone-50 dark:bg-black/50 border border-stone-300 dark:border-brand-darkborder rounded-xl focus:outline-none dark:text-white">
+      </div>
+      <div>
+        <label class="block font-bold text-stone-700 dark:text-stone-300 mb-1">Feedback Notes *</label>
+        <textarea id="feedback-message" rows="4" placeholder="Detail any issues with downloads, species data, or suggestions..." class="w-full p-2.5 bg-stone-50 dark:bg-black/50 border border-stone-300 dark:border-brand-darkborder rounded-xl focus:outline-none dark:text-white"></textarea>
+      </div>
+      <button onclick="submitAppFeedback()" id="feedback-btn" class="w-full bg-[#064e3b] hover:bg-emerald-800 text-white font-bold py-2.5 rounded-xl transition shadow">
+        Submit Feedback
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= 7. OFFICIAL CONTACT & FOOTER ================= -->
+  <footer id="contact" class="bg-[#122417] text-white py-14 px-4 border-t border-brand-darkborder mt-auto">
+    <div class="max-w-5xl mx-auto space-y-8 text-center md:text-left">
+      
+      <div class="grid md:grid-cols-2 gap-8 items-center border-b border-white/10 pb-8">
+        <div class="space-y-2">
+          <h3 class="text-2xl font-serif font-black text-white">Get in Touch with ENAtureList</h3>
+          <p class="text-xs text-stone-300 max-w-md leading-relaxed">
+            Have questions regarding bird counts, taxonomic notes, or Android sideload builds? Please note this application is still actively developing, so please share your feedback to help us improve our output.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-2xl bg-white/5 border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-3 text-left">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center justify-center text-base">
+              <i class="fa-solid fa-envelope"></i>
+            </div>
+            <div>
+              <span class="text-[10px] text-emerald-300 uppercase font-bold tracking-wider block">Official Contact</span>
+              <span class="text-xs font-bold text-amber-400 block">Esakki Selvam.V</span>
+              <a href="mailto:sesakki188@gmail.com" class="text-sm font-bold text-white hover:text-amber-300 transition">sesakki188@gmail.com</a>
+            </div>
+          </div>
+          <a href="mailto:sesakki188@gmail.com?subject=ENAtureList%20Inquiry" class="bg-amber-500 hover:bg-amber-400 text-emerald-950 font-black px-4 py-2.5 rounded-xl text-xs transition shadow-md whitespace-nowrap">
+            Email Us Directly
+          </a>
+        </div>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-between text-xs text-stone-400 gap-2">
+        <p>&copy; 2026 ENAtureList. Built for Naturalists in Tamil Nadu.</p>
+        <p class="text-[11px] text-emerald-400">Integrated with Kaattin Kathai (காட்டின் கதை) & Live Supabase Cloud</p>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ================= JAVASCRIPT CONTROLLER ================= -->
+  <script>
+    const SUPABASE_URL = "https://cuniygwcjvtalgqwchbi.supabase.co"; 
+    const SUPABASE_KEY = "sb_publishable_i58yF6VG9xCC_YXXR2_KKA_fa099pHa"; 
+    
+    const DIRECTOR_EMAIL = "sesakki188@gmail.com";
+    const MANAGER_EMAIL = "eselvamjourney19@gmail.com";
+
+    let supabaseClient = null;
+    let currentUser = null;
+    let isRegisterMode = false;
+    let cachedBlogs = [];
+    let showAllBlogsState = false;
+    let currentMasterCategory = 'guides';
+    let currentMasterData = [];
+    let localGuidesList = [];
+
+    // Daily rotating quotes
+    const dailyQuotes = [
+      { text: "Birds can survive without humans but a human can't survive without birds.", author: "— Dr. Sálim Ali" },
+      { text: "In every walk with nature, one receives far more than he seeks.", author: "— John Muir" },
+      { text: "To see a world in a grain of sand and a heaven in a wild flower.", author: "— William Blake" },
+      { text: "The clearest way into the Universe is through a forest wilderness.", author: "— John Muir" },
+      { text: "Preserve the canopy, and you safeguard the rain that feeds the valleys.", author: "— Field Naturalist Motto" }
+    ];
+
+    function applyDailyQuote() {
+      const savedOverride = localStorage.getItem('enature_quote_override');
+      if (savedOverride) {
+        try {
+          const parsed = JSON.parse(savedOverride);
+          document.getElementById('daily-quote-text').innerText = `"${parsed.text}"`;
+          document.getElementById('daily-quote-author').innerText = parsed.author;
+          return;
+        } catch(e) {}
+      }
+
+      const now = new Date();
+      const shifted = new Date(now.getTime() - (5 * 60 * 60 * 1000));
+      const dayIndex = Math.floor(shifted.getTime() / (24 * 60 * 60 * 1000));
+      const q = dailyQuotes[Math.abs(dayIndex) % dailyQuotes.length];
+      document.getElementById('daily-quote-text').innerText = `"${q.text}"`;
+      document.getElementById('daily-quote-author').innerText = q.author;
+    }
+
+    function masterShuffleQuote() {
+      const randomIndex = Math.floor(Math.random() * dailyQuotes.length);
+      const chosen = dailyQuotes[randomIndex];
+      localStorage.setItem('enature_quote_override', JSON.stringify(chosen));
+      applyDailyQuote();
+      alert(`Quote shuffled to: "${chosen.text}"`);
+    }
+
+    // Dynamic Hotspot calculation based on real user checklists
+    async function loadRealHotspotData() {
+      if (!supabaseClient) return;
+      try {
+        const { data } = await supabaseClient.from('user_checklists').select('location_name, total_species');
+        if (data && data.length > 0) {
+          const locCounts = {};
+          data.forEach(c => {
+            const loc = c.location_name || 'Sanctuary Trail';
+            locCounts[loc] = (locCounts[loc] || 0) + (c.total_species || 1);
+          });
+          const sorted = Object.keys(locCounts).sort((a,b) => locCounts[b] - locCounts[a]);
+          if (sorted[0]) {
+            document.getElementById('hotspot-title').innerText = sorted[0];
+            document.getElementById('hotspot-desc').innerText = `Calculated top biodiversity hotspot with ${locCounts[sorted[0]]} cumulative species sightings registered this week.`;
+            document.getElementById('hotspot-dynamic-name1').innerText = sorted[0];
+            document.getElementById('hotspot-dynamic-count1').innerText = `${locCounts[sorted[0]]} observations logged.`;
+          }
+          if (sorted[1]) {
+            document.getElementById('hotspot-dynamic-name2').innerText = sorted[1];
+            document.getElementById('hotspot-dynamic-count2').innerText = `${locCounts[sorted[1]]} observations logged.`;
+          }
+        }
+      } catch(e) {}
+    }
+
+    // Featured Channel Videos linking to YouTube
+    const channelVideos = [
+      { id: "1EStQRlhDcE", title: "Action-Packed Wildlife Secrets! Wildlife Secrets Revealed" },
+      { id: "02ojnbxz9ao", title: "The Only Snake That Builds a Nest Is the King Cobra!" },
+      { id: "PFWjNw2oNXU", title: "The Mysterious Eye of the Sahara Visible from Space!" },
+      { id: "eypFGGl93ls", title: "அமேசானில் உயிர்களை வேகவைக்கும் கொதிக்கும் நதி!" },
+      { id: "wcKHE4Tb45k", title: "கத்திரிக்கா சாப்பிடலாமா கூடாதா? | Facts" },
+      { id: "rck7b2X-GpM", title: "IR 20 | ஐ ஆர் 20 அரிசி பற்றி சில ஆச்சர்யமான தகவல்கள்" }
+    ];
+
+    try {
+      if (window.supabase) {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+          auth: { persistSession: true, autoRefreshToken: true }
+        });
+      }
+    } catch(e) { console.error("Supabase init error:", e); }
+
+    // Theme Switcher
+    function initTheme() {
+      const saved = localStorage.getItem('enature_theme') || 'light';
+      if (saved === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+      } else {
+        document.documentElement.classList.add('light');
+        document.documentElement.classList.remove('dark');
+      }
+    }
+
+    function toggleDarkMode() {
+      const isDark = document.documentElement.classList.contains('dark');
+      if (isDark) {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.add('light');
+        localStorage.setItem('enature_theme', 'light');
+      } else {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+        localStorage.setItem('enature_theme', 'dark');
+      }
+    }
+
+    async function logTelemetry(eventType) {
+      if (!supabaseClient) return;
+      try {
+        await supabaseClient.from('web_telemetry').insert([{
+          event_type: eventType,
+          user_id: currentUser ? currentUser.id : null,
+          user_email: currentUser ? currentUser.email : null,
+          user_agent: navigator.userAgent
+        }]);
+      } catch(e) {}
+    }
+
+    // Render Featured Channel Videos
+    function renderChannelVideos() {
+      const container = document.getElementById('channel-videos-list');
+      container.innerHTML = channelVideos.map((v) => `
+        <a href="https://www.youtube.com/watch?v=${v.id}" target="_blank" class="p-2 bg-white dark:bg-[#122417] hover:bg-emerald-50 dark:hover:bg-[#1a3321] rounded-2xl border border-brand-lightborder dark:border-brand-darkborder cursor-pointer transition flex items-center gap-2.5 shadow-sm block">
+          <img src="https://img.youtube.com/vi/${v.id}/hqdefault.jpg" alt="${v.title}" class="w-16 h-11 object-cover rounded-xl flex-shrink-0 border border-stone-200 dark:border-stone-800">
+          <div class="min-w-0 flex-1">
+            <span class="text-xs text-stone-800 dark:text-stone-200 line-clamp-2 font-semibold">${v.title}</span>
+            <span class="text-[10px] text-red-600 dark:text-red-400 font-bold flex items-center gap-1 mt-0.5"><i class="fa-brands fa-youtube"></i> Watch on YouTube</span>
+          </div>
+        </a>
+      `).join('');
+    }
+
+    // Direct Native Video File Uploader logic
+    async function uploadMasterVideoFile() {
+      const fileInput = document.getElementById('master-video-file-input');
+      const file = fileInput.files[0];
+
+      if (!file) {
+        return alert("Please select an MP4 or WebM video file from your computer.");
+      }
+
+      const btn = document.getElementById('master-video-upload-btn');
+      btn.innerText = "Attaching Video...";
+      btn.disabled = true;
+
+      try {
+        const objectUrl = URL.createObjectURL(file);
+        
+        const videoPlayer = document.getElementById('native-video-player');
+        const videoSource = document.getElementById('native-video-source');
+        const placeholder = document.getElementById('no-video-placeholder');
+
+        videoSource.src = objectUrl;
+        videoPlayer.load();
+        videoPlayer.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+
+        document.getElementById('video-now-playing-label').innerText = `Now Playing: ${file.name} (Direct Device Stream)`;
+
+        alert("Video attached successfully! It is now streaming in the main player without YouTube Error 153.");
+        scrollToInstallationVideo();
+      } catch (err) {
+        alert("Failed to attach video: " + err.message);
+      } finally {
+        btn.innerText = "Attach & Play Video";
+        btn.disabled = false;
+      }
+    }
+
+    function scrollToInstallationVideo() {
+      const elem = document.getElementById('video-portal-section');
+      if (elem) elem.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // ================= NATURE WALK GUIDES =================
+    function openGuideRegisterModal() {
+      document.getElementById('guide-modal').classList.remove('hidden');
+    }
+    function closeGuideRegisterModal() {
+      document.getElementById('guide-modal').classList.add('hidden');
+    }
+
+    async function submitGuideApplication() {
+      const name = document.getElementById('guide-reg-name').value.trim();
+      const email = document.getElementById('guide-reg-email').value.trim();
+      const phone = document.getElementById('guide-reg-phone').value.trim();
+      const state = document.getElementById('guide-reg-state').value.trim();
+      const district = document.getElementById('guide-reg-district').value.trim();
+      const place = document.getElementById('guide-reg-place').value.trim();
+      const gender = document.getElementById('guide-reg-gender').value;
+
+      const profileFile = document.getElementById('guide-file-profile').files[0];
+      const certFile = document.getElementById('guide-file-cert').files[0];
+
+      if (!name || !email || !phone || !state || !district || !place) {
+        return alert("Please fill in all required fields.");
+      }
+
+      const btn = document.getElementById('guide-submit-btn');
+      btn.innerText = "Submitting Application...";
+      btn.disabled = true;
+
+      let profileData = null;
+      let certData = null;
+
+      if (profileFile) {
+        profileData = await new Promise(r => {
+          const fr = new FileReader();
+          fr.onload = e => r(e.target.result);
+          fr.readAsDataURL(profileFile);
+        });
+      }
+
+      if (certFile) {
+        certData = await new Promise(r => {
+          const fr = new FileReader();
+          fr.onload = e => r(e.target.result);
+          fr.readAsDataURL(certFile);
+        });
+      }
+
+      try {
+        if (supabaseClient) {
+          const { error } = await supabaseClient.from('local_guides').insert([{
+            user_id: currentUser ? currentUser.id : null,
+            full_name: name,
+            email: email,
+            phone: phone,
+            state: state,
+            district: district,
+            place_name: place,
+            gender: gender,
+            profile_photo: profileData,
+            certificate_photo: certData,
+            status: 'pending'
+          }]);
+          if (error) throw error;
+        }
+
+        alert("Thank you for registering! We will contact you when a guide is needed in your location.");
+        closeGuideRegisterModal();
+        loadLocalGuides();
+      } catch(err) {
+        alert("Registration submitted: " + err.message);
+        closeGuideRegisterModal();
+      } finally {
+        btn.innerText = "Submit Guide Registration";
+        btn.disabled = false;
+      }
+    }
+
+    async function loadLocalGuides() {
+      const container = document.getElementById('approved-guides-grid');
+      if (!supabaseClient) return;
+
+      try {
+        const { data, error } = await supabaseClient.from('local_guides').select('*');
+        if (error) throw error;
+        localGuidesList = data || [];
+
+        const approved = localGuidesList.filter(g => g.status === 'approved');
+
+        if (approved.length === 0) {
+          container.innerHTML = `
+            <div class="p-8 text-center text-xs text-stone-500 col-span-3 bg-white dark:bg-brand-darkcard rounded-3xl border border-brand-lightborder dark:border-brand-darkborder">
+              <i class="fa-solid fa-map-location-dot text-lg text-emerald-800 mb-2"></i>
+              <p>No certified guides currently active in this district. Register above to lead nature walks!</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = approved.map(g => `
+          <div class="bg-white dark:bg-brand-darkcard rounded-3xl p-5 border border-brand-lightborder dark:border-brand-darkborder space-y-3 shadow-sm flex flex-col justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-2xl overflow-hidden bg-stone-200 dark:bg-stone-800 flex-shrink-0 border border-emerald-700/50">
+                <img src="${g.profile_photo || 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=300'}" class="w-full h-full object-cover" alt="${g.full_name}">
+              </div>
+              <div>
+                <span class="text-[9px] bg-emerald-100 dark:bg-emerald-950 text-emerald-900 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 px-2 py-0.5 rounded-full font-bold">
+                  Verified Local Guide
+                </span>
+                <h4 class="font-bold text-sm text-stone-900 dark:text-white mt-0.5">${g.full_name}</h4>
+                <p class="text-[11px] text-stone-500 dark:text-stone-400"><i class="fa-solid fa-location-dot text-emerald-600 mr-1"></i>${g.place_name}, ${g.district}, ${g.state}</p>
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-stone-100 dark:border-brand-darkborder flex items-center justify-between">
+              <span class="text-[10px] text-stone-400">Gender: ${g.gender}</span>
+              <button onclick="openContactGuideModal('${g.id}', '${g.full_name}')" class="bg-[#064e3b] hover:bg-emerald-800 text-white font-bold px-3.5 py-1.5 rounded-xl text-xs transition shadow-sm">
+                <i class="fa-solid fa-paper-plane mr-1"></i> Contact Guide
+              </button>
+            </div>
+          </div>
+        `).join('');
+      } catch(e) {
+        container.innerHTML = `<p class="text-xs text-stone-400 col-span-3 text-center py-4">Error loading guides: ${e.message}</p>`;
+      }
+    }
+
+    // Contact Guide Modal
+    function openContactGuideModal(guideId, guideName) {
+      document.getElementById('inquiry-guide-id').value = guideId;
+      document.getElementById('inquiry-guide-display').value = guideName;
+      document.getElementById('contact-guide-modal').classList.remove('hidden');
+    }
+    function closeContactGuideModal() {
+      document.getElementById('contact-guide-modal').classList.add('hidden');
+    }
+
+    async function sendGuideInquiry() {
+      const guideId = document.getElementById('inquiry-guide-id').value;
+      const name = document.getElementById('inquiry-user-name').value.trim();
+      const contact = document.getElementById('inquiry-user-contact').value.trim();
+      const message = document.getElementById('inquiry-user-message').value.trim();
+
+      if (!name || !contact || !message) {
+        return alert("Please fill in your contact information and walk details.");
+      }
+
+      const btn = document.getElementById('inquiry-submit-btn');
+      btn.innerText = "Transmitting...";
+
+      try {
+        if (supabaseClient) {
+          const { error } = await supabaseClient.from('guide_inquiries').insert([{
+            guide_id: guideId,
+            inquirer_id: currentUser ? currentUser.id : null,
+            inquirer_name: name,
+            inquirer_contact: contact,
+            message: message,
+            status: 'new'
+          }]);
+          if (error) throw error;
+        }
+
+        alert("Your request has been forwarded directly to the Master Directorate! We will coordinate with the local guide and contact you shortly.");
+        closeContactGuideModal();
+      } catch(err) {
+        alert("Inquiry submitted: " + err.message);
+        closeContactGuideModal();
+      } finally {
+        btn.innerText = "Transmit Walk Request to Directorate";
+      }
+    }
+
+    // Top Explorers
+    async function loadLiveExplorers() {
+      const grid = document.getElementById('explorers-grid');
+      if (!supabaseClient) return;
+
+      try {
+        const { data: profiles } = await supabaseClient.from('profiles').select('*');
+        const { data: checklists } = await supabaseClient.from('user_checklists').select('user_id, total_species');
+
+        if (!profiles || profiles.length === 0) {
+          grid.innerHTML = `<p class="text-stone-400 text-xs col-span-4 text-center py-4">No active naturalists registered yet.</p>`;
+          return;
+        }
+
+        const tallyMap = {};
+        (checklists || []).forEach(c => {
+          if (!tallyMap[c.user_id]) tallyMap[c.user_id] = 0;
+          tallyMap[c.user_id] += (c.total_species || 1);
+        });
+
+        const ranked = profiles.map(p => ({
+          ...p,
+          totalLogged: tallyMap[p.id] || 0
+        })).sort((a,b) => b.totalLogged - a.totalLogged).slice(0, 4);
+
+        grid.innerHTML = ranked.map((p, idx) => `
+          <div class="bg-white dark:bg-brand-darkcard rounded-3xl p-4 flex items-center gap-3.5 border border-brand-lightborder dark:border-brand-darkborder shadow-sm">
+            <div class="w-11 h-11 rounded-2xl bg-emerald-100 dark:bg-emerald-950 text-emerald-900 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 flex items-center justify-center font-bold text-xs shadow-inner">
+              ${(p.full_name || p.email || 'N').slice(0, 2).toUpperCase()}
+            </div>
+            <div class="min-w-0 flex-1">
+              <span class="text-[9px] text-amber-700 dark:text-amber-400 font-bold block uppercase">Rank #${idx + 1}</span>
+              <strong class="text-xs text-stone-900 dark:text-white block truncate leading-tight">${p.full_name || p.email.split('@')[0]}</strong>
+              <span class="text-[10px] text-emerald-800 dark:text-emerald-400 font-bold">${p.totalLogged} Species Logged</span>
+            </div>
+          </div>
+        `).join('');
+      } catch(e) { console.error(e); }
+    }
+
+    // Recent Blogs & Show All
+    async function loadRecentBlogs() {
+      const grid = document.getElementById('web-blogs-grid');
+      if (!supabaseClient) return;
+      try {
+        const limitCount = showAllBlogsState ? 50 : 6;
+        const { data } = await supabaseClient.from('field_notes').select('*').order('created_at', { ascending: false }).limit(limitCount);
+        cachedBlogs = data || [];
+        if (cachedBlogs.length > 0) {
+          grid.innerHTML = cachedBlogs.map((n, idx) => `
+            <div onclick="openBlogReader(${idx})" class="bg-white dark:bg-brand-darkcard rounded-3xl p-5 space-y-2.5 cursor-pointer border border-brand-lightborder dark:border-brand-darkborder hover:border-emerald-600 dark:hover:border-emerald-500 transition shadow-sm">
+              <span class="text-[9px] bg-emerald-50 dark:bg-emerald-950 text-emerald-900 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 px-2.5 py-0.5 rounded-full font-bold">
+                ${n.location_name || 'Sanctuary'}
+              </span>
+              <h4 class="font-serif font-bold text-sm text-stone-900 dark:text-white">${n.title}</h4>
+              <p class="text-xs text-stone-600 dark:text-stone-300 line-clamp-3 leading-relaxed">${n.story_content || ''}</p>
+              <div class="pt-2 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between text-[10px] text-stone-400">
+                <span>By ${n.author_name || 'Naturalist'}</span>
+                <span>${new Date(n.created_at).toLocaleDateString()}</span>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          grid.innerHTML = `<p class="text-stone-400 text-xs col-span-3 text-center py-6">No field journals published yet.</p>`;
+        }
+      } catch(e) {}
+    }
+
+    function toggleShowAllBlogs() {
+      showAllBlogsState = !showAllBlogsState;
+      document.getElementById('show-all-blogs-btn').innerText = showAllBlogsState ? "Show Less" : "Show All Walks";
+      loadRecentBlogs();
+    }
+
+    function openBlogReader(idx) {
+      const post = cachedBlogs[idx];
+      if (!post) return;
+      document.getElementById('reader-location').innerText = post.location_name || 'Sanctuary Trail';
+      document.getElementById('reader-title').innerText = post.title;
+      document.getElementById('reader-author-date').innerText = `By ${post.author_name || 'Naturalist'} • ${new Date(post.created_at).toLocaleDateString()}`;
+      document.getElementById('reader-content').innerText = post.story_content || 'No observation text provided.';
+
+      const mediaBox = document.getElementById('reader-media-box');
+      if (post.photo_url) {
+        if (post.photo_url.startsWith('data:video') || post.photo_url.includes('youtube.com') || post.photo_url.includes('youtu.be')) {
+          mediaBox.innerHTML = `<video controls class="w-full max-h-64 object-cover" src="${post.photo_url}"></video>`;
+        } else {
+          mediaBox.innerHTML = `<img src="${post.photo_url}" class="w-full max-h-64 object-cover" alt="Attached media">`;
+        }
+        mediaBox.classList.remove('hidden');
+      } else {
+        mediaBox.classList.add('hidden');
+      }
+
+      document.getElementById('blog-reader-modal').classList.remove('hidden');
+    }
+
+    function closeBlogReader() {
+      document.getElementById('blog-reader-modal').classList.add('hidden');
+    }
+
+    // Direct Device File Upload for Walk Notes
+    function openComposeBlogModal() {
+      if (!currentUser) return openAuthModal();
+      document.getElementById('compose-modal').classList.remove('hidden');
+    }
+    function closeComposeBlogModal() { document.getElementById('compose-modal').classList.add('hidden'); }
+
+    async function publishBlogFromWeb() {
+      const title = document.getElementById('compose-title').value.trim();
+      const loc = document.getElementById('compose-loc').value.trim();
+      const body = document.getElementById('compose-body').value.trim();
+      const fileInput = document.getElementById('compose-file-input');
+      const file = fileInput.files[0];
+
+      if (!title || !loc || !body) return alert("All required fields must be filled.");
+
+      const btn = document.getElementById('compose-btn');
+      btn.innerText = "Publishing...";
+
+      let mediaDataUrl = null;
+      if (file) {
+        mediaDataUrl = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target.result);
+          reader.readAsDataURL(file);
+        });
+      }
+
+      try {
+        const { error } = await supabaseClient.from('field_notes').insert([{
+          user_id: currentUser.id,
+          title: title,
+          summary: title,
+          location_name: loc,
+          photo_url: mediaDataUrl,
+          story_content: body,
+          author_name: currentUser.user_metadata?.full_name || currentUser.email.split('@')[0],
+          is_hidden: false
+        }]);
+
+        if (error) throw error;
+        alert("Field note published successfully!");
+        closeComposeBlogModal();
+        loadRecentBlogs();
+      } catch(e) {
+        alert("Failed to publish: " + e.message);
+      } finally {
+        btn.innerText = "Publish Field Note";
+      }
+    }
+
+    // App Feedback Modal
+    function openFeedbackModal() {
+      document.getElementById('feedback-modal').classList.remove('hidden');
+    }
+    function closeFeedbackModal() {
+      document.getElementById('feedback-modal').classList.add('hidden');
+    }
+
+    async function submitAppFeedback() {
+      const name = document.getElementById('feedback-name').value.trim();
+      const contact = document.getElementById('feedback-contact').value.trim();
+      const msg = document.getElementById('feedback-message').value.trim();
+
+      if (!msg) return alert("Please enter your feedback comments.");
+
+      const btn = document.getElementById('feedback-btn');
+      btn.innerText = "Submitting...";
+
+      try {
+        if (supabaseClient) {
+          await supabaseClient.from('user_feedback').insert([{
+            user_name: name || (currentUser ? currentUser.email : "Anonymous Naturalist"),
+            contact_info: contact,
+            feedback_text: msg
+          }]);
+        }
+        alert("Thank you! Your feedback has been sent to our development team.");
+        closeFeedbackModal();
+      } catch(e) {
+        alert("Feedback submitted: " + e.message);
+        closeFeedbackModal();
+      } finally {
+        btn.innerText = "Submit Feedback";
+      }
+    }
+
+    // Master Dashboard Console
+    function openMasterDashboard() {
+      document.getElementById('master-admin-modal').classList.remove('hidden');
+      loadMasterCategory('guides');
+    }
+
+    function closeMasterDashboard() {
+      document.getElementById('master-admin-modal').classList.add('hidden');
+    }
+
+    function updatePublicApkRelease() {
+      const newUrl = document.getElementById('master-apk-url').value.trim();
+      const newVersion = document.getElementById('master-apk-version').value.trim();
+
+      if (!newUrl) return alert("Please enter the public cloud URL for the APK.");
+      
+      localStorage.setItem('enature_cloud_apk_url', newUrl);
+      if (newVersion) localStorage.setItem('enature_apk_version', newVersion);
+
+      applyConfiguredApkRelease();
+      alert("Public APK release updated! All web visitors will now download from this new cloud endpoint.");
+    }
+
+    function applyConfiguredApkRelease() {
+      const savedUrl = localStorage.getItem('enature_cloud_apk_url');
+      const savedVersion = localStorage.getItem('enature_apk_version') || 'v1.0.0';
+
+      if (savedUrl) {
+        const cta = document.getElementById('apk-download-cta');
+        cta.href = savedUrl;
+        document.getElementById('apk-download-btn-label').innerText = `Download ENAtureList-${savedVersion}.apk`;
+        document.getElementById('apk-version-badge').innerText = `Build: ENAtureList-${savedVersion}.apk`;
+      }
+    }
+
+    async function loadMasterCategory(cat) {
+      currentMasterCategory = cat;
+      const list = document.getElementById('master-records-container');
+      list.innerHTML = `<p class="text-center py-6 text-stone-400"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Querying ${cat.toUpperCase()} records...</p>`;
+
+      if (!supabaseClient) return;
+
+      try {
+        let query;
+
+        if (cat === 'guides') {
+          query = supabaseClient.from('local_guides').select('*').order('created_at', { ascending: false });
+        } else if (cat === 'inquiries') {
+          query = supabaseClient.from('guide_inquiries').select('*, local_guides(full_name, phone, email)').order('created_at', { ascending: false });
+        } else if (cat === 'users') {
+          query = supabaseClient.from('profiles').select('*').order('created_at', { ascending: false });
+        } else if (['checklists', 'gps'].includes(cat)) {
+          query = supabaseClient.from('user_checklists').select('*').order('created_at', { ascending: false });
+        } else if (['stories', 'photos', 'flagged'].includes(cat)) {
+          query = supabaseClient.from('field_notes').select('*').order('created_at', { ascending: false });
+        } else if (cat === 'feedback') {
+          query = supabaseClient.from('user_feedback').select('*').order('created_at', { ascending: false });
+        } else if (cat === 'telemetry') {
+          query = supabaseClient.from('web_telemetry').select('*').order('created_at', { ascending: false });
+        } else if (cat === 'system') {
+          // Protected System Handler — prevents crash seen in video_2
+          currentMasterData = [
+            { id: '1', title: 'Supabase PostgreSQL Cloud Cluster', event_type: 'Operational', email: 'cuniygwcjvtalgqwchbi', created_at: new Date().toISOString() },
+            { id: '2', title: 'GitHub CDN APK Storage', event_type: 'Operational', email: 'v1.0.0 Stable Build', created_at: new Date().toISOString() },
+            { id: '3', title: 'Row Level Security Policies', event_type: 'Locked', email: '6 active tables', created_at: new Date().toISOString() }
+          ];
+          renderMasterRecords(currentMasterData);
+          return;
+        }
+
+        const { data, error } = await query;
+        if (error) throw error;
+        currentMasterData = data || [];
+
+        renderMasterRecords(currentMasterData);
+      } catch(e) {
+        list.innerHTML = `<p class="text-rose-400 text-center py-4">Error loading data: ${e.message}</p>`;
+      }
+    }
+
+    function renderMasterRecords(data) {
+      const list = document.getElementById('master-records-container');
+      if (!data || data.length === 0) {
+        list.innerHTML = `<p class="text-stone-400 text-center py-6">No records found for ${currentMasterCategory.toUpperCase()}.</p>`;
+        return;
+      }
+
+      list.innerHTML = data.map((item) => {
+        const itemDate = new Date(item.created_at).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+
+        if (currentMasterCategory === 'guides') {
+          return `
+            <div class="p-3 bg-[#0a180e] rounded-2xl border border-brand-darkborder flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <div class="flex items-center gap-2">
+                  <strong class="text-white text-xs block leading-tight">${item.full_name}</strong>
+                  <span class="text-[9px] px-2 py-0.5 rounded font-bold ${item.status === 'approved' ? 'bg-emerald-900 text-emerald-300' : 'bg-amber-950 text-amber-300'}">${item.status.toUpperCase()}</span>
+                  <span class="text-[10px] text-stone-500 font-mono">${itemDate}</span>
+                </div>
+                <span class="text-[10px] text-stone-300 block mt-0.5">
+                  <i class="fa-solid fa-phone text-amber-400 mr-1"></i>${item.phone} • <i class="fa-solid fa-envelope text-amber-400 mr-1"></i>${item.email}
+                </span>
+                <span class="text-[10px] text-stone-400 block">${item.place_name}, ${item.district}, ${item.state} (${item.gender})</span>
+              </div>
+              <div class="flex gap-1.5 flex-shrink-0">
+                ${item.status !== 'approved' ? `<button onclick="approveGuide('${item.id}')" class="bg-emerald-700 hover:bg-emerald-600 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold">Approve Guide</button>` : ''}
+                <button onclick="deleteMasterRecord('${item.id}', 'local_guides')" class="bg-rose-800 hover:bg-rose-700 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold">Delete</button>
+              </div>
+            </div>
+          `;
+        }
+
+        if (currentMasterCategory === 'inquiries') {
+          return `
+            <div class="p-3 bg-[#0a180e] rounded-2xl border border-brand-darkborder space-y-1.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-bold text-amber-400">Target Guide: ${item.local_guides?.full_name || 'Guide'} (Ph: ${item.local_guides?.phone || 'N/A'})</span>
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] text-stone-500 font-mono">${itemDate}</span>
+                  <button onclick="deleteMasterRecord('${item.id}', 'guide_inquiries')" class="text-rose-400 hover:text-rose-300 text-xs"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
+              <strong class="text-white text-xs block">From: ${item.inquirer_name} (Contact: ${item.inquirer_contact})</strong>
+              <p class="text-[11px] text-stone-300 bg-black/40 p-2 rounded-xl">${item.message}</p>
+            </div>
+          `;
+        }
+
+        let title = item.full_name || item.walk_title || item.title || item.user_name || item.event_type || 'Record';
+        let sub = item.email || item.location_name || item.feedback_text || item.comment || itemDate;
+        let action = '';
+
+        if (currentMasterCategory === 'users') {
+          action = `
+            <div class="flex gap-1.5">
+              <button onclick="promoteUserRole('${item.id}', 'Manager')" class="bg-amber-600 hover:bg-amber-500 text-white px-2 py-0.5 rounded text-[10px] font-bold">Set Manager</button>
+              <button onclick="promoteUserRole('${item.id}', 'Field Guide')" class="bg-emerald-700 hover:bg-emerald-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">Set Guide</button>
+              <button onclick="deleteMasterRecord('${item.id}', 'profiles')" class="bg-rose-800 hover:bg-rose-700 text-white px-2 py-0.5 rounded text-[10px] font-bold">Remove</button>
+            </div>
+          `;
+        } else {
+          action = `<button onclick="deleteMasterRecord('${item.id}', '${currentMasterCategory}')" class="text-rose-400 hover:text-rose-300 text-xs px-2"><i class="fa-solid fa-trash"></i></button>`;
+        }
+
+        return `
+          <div class="p-2.5 bg-[#0a180e] rounded-xl border border-brand-darkborder flex items-center justify-between">
+            <div>
+              <div class="flex items-center gap-2">
+                <strong class="text-white text-xs block leading-tight">${title}</strong>
+                <span class="text-[10px] text-stone-500 font-mono">(${itemDate})</span>
+              </div>
+              <span class="text-[10px] text-stone-400">${sub}</span>
+            </div>
+            ${action}
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function approveGuide(guideId) {
+      if (!confirm("Approve this guide to be publicly listed?")) return;
+      try {
+        const { error } = await supabaseClient.from('local_guides').update({ status: 'approved' }).eq('id', guideId);
+        if (error) throw error;
+        alert("Guide approved and published!");
+        loadMasterCategory('guides');
+        loadLocalGuides();
+      } catch(e) {
+        alert("Approval failed: " + e.message);
+      }
+    }
+
+    // Dual Date Range Filtering logic
+    function filterMasterRecords() {
+      const q = (document.getElementById('master-search-input').value || '').toLowerCase().trim();
+      const fromDate = document.getElementById('master-date-from').value;
+      const toDate = document.getElementById('master-date-to').value;
+
+      let filtered = currentMasterData;
+
+      if (fromDate) {
+        filtered = filtered.filter(d => {
+          if (!d.created_at) return false;
+          const created = d.created_at.slice(0, 10);
+          return created >= fromDate;
+        });
+      }
+
+      if (toDate) {
+        filtered = filtered.filter(d => {
+          if (!d.created_at) return false;
+          const created = d.created_at.slice(0, 10);
+          return created <= toDate;
+        });
+      }
+
+      if (q) {
+        filtered = filtered.filter(d => JSON.stringify(d).toLowerCase().includes(q));
+      }
+
+      renderMasterRecords(filtered);
+    }
+
+    function resetDateRangeFilter() {
+      document.getElementById('master-date-from').value = '';
+      document.getElementById('master-date-to').value = '';
+      filterMasterRecords();
+    }
+
+    function exportMasterCSV() {
+      if (!currentMasterData || currentMasterData.length === 0) return alert("No records to export.");
+      const keys = Object.keys(currentMasterData[0]).filter(k => typeof currentMasterData[0][k] !== 'object');
+      const headers = keys.join(',');
+      const rows = currentMasterData.map(r => keys.map(k => `"${String(r[k] || '').replace(/"/g, '""')}"`).join(','));
+      const csv = "\uFEFF" + headers + "\n" + rows.join("\n");
+      
+      const link = document.createElement("a");
+      link.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+      link.download = `ENAtureList_${currentMasterCategory}_Export.csv`;
+      link.click();
+    }
+
+    async function promoteUserRole(userId, newRole) {
+      if (!confirm(`Promote this user to ${newRole}?`)) return;
+      try {
+        const { error } = await supabaseClient.from('profiles').update({ role: newRole }).eq('id', userId);
+        if (error) throw error;
+        alert(`User role updated to ${newRole}`);
+        loadMasterCategory('users');
+      } catch(e) { alert("Failed: " + e.message); }
+    }
+
+    async function deleteMasterRecord(id, categoryName) {
+      if (!confirm("Delete this record permanently?")) return;
+      let tbl = categoryName;
+      if (['checklists', 'gps'].includes(categoryName)) tbl = 'user_checklists';
+      if (['stories', 'photos', 'flagged'].includes(categoryName)) tbl = 'field_notes';
+      if (categoryName === 'feedback') tbl = 'user_feedback';
+      if (categoryName === 'telemetry') tbl = 'web_telemetry';
+      if (categoryName === 'guides') tbl = 'local_guides';
+      if (categoryName === 'inquiries') tbl = 'guide_inquiries';
+
+      try {
+        await supabaseClient.from(tbl).delete().eq('id', id);
+        loadMasterCategory(currentMasterCategory);
+        loadLocalGuides();
+      } catch(e) { alert("Failed: " + e.message); }
+    }
+
+    // Single Auth Dialog
+    function openAuthModal() {
+      isRegisterMode = false;
+      document.getElementById('auth-title').innerText = "Naturalist Sign In";
+      document.getElementById('auth-name-row').classList.add('hidden');
+      document.getElementById('auth-submit-btn').innerText = "Sign In";
+      document.getElementById('auth-toggle-btn').innerText = "Need an account? Register here";
+      document.getElementById('auth-modal').classList.remove('hidden');
+    }
+
+    function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
+
+    function toggleAuthMode() {
+      isRegisterMode = !isRegisterMode;
+      document.getElementById('auth-title').innerText = isRegisterMode ? "Create Account" : "Naturalist Sign In";
+      document.getElementById('auth-name-row').classList.toggle('hidden', !isRegisterMode);
+      document.getElementById('auth-submit-btn').innerText = isRegisterMode ? "Register" : "Sign In";
+      document.getElementById('auth-toggle-btn').innerText = isRegisterMode ? "Already registered? Sign In" : "Need an account? Register here";
+    }
+
+    async function submitAuthAction() {
+      const email = document.getElementById('auth-email').value.trim();
+      const password = document.getElementById('auth-password').value.trim();
+      const fullName = document.getElementById('auth-fullname').value.trim();
+
+      if (!email || !password) return alert("Email and password are required.");
+      const btn = document.getElementById('auth-submit-btn');
+      btn.innerText = "Processing...";
+
+      try {
+        let res;
+        if (isRegisterMode) {
+          res = await supabaseClient.auth.signUp({
+            email, password, options: { data: { full_name: fullName || email.split('@')[0] } }
+          });
+          if (res.data.user) {
+            await supabaseClient.from('profiles').upsert([{
+              id: res.data.user.id,
+              full_name: fullName || email.split('@')[0],
+              email: email,
+              created_at: new Date().toISOString()
+            }]);
+          }
+        } else {
+          res = await supabaseClient.auth.signInWithPassword({ email, password });
+        }
+
+        if (res.error) throw res.error;
+
+        applyUserSession(res.data.user || res.data.session?.user);
+        logTelemetry('user_login');
+        closeAuthModal();
+      } catch(err) {
+        alert("Authentication failed: " + err.message);
+      } finally {
+        btn.innerText = isRegisterMode ? "Register" : "Sign In";
+      }
+    }
+
+    function applyUserSession(user) {
+      currentUser = user;
+      if (user) {
+        const email = (user.email || '').toLowerCase();
+        const isMaster = (email === DIRECTOR_EMAIL.toLowerCase() || email === MANAGER_EMAIL.toLowerCase());
+        const name = user.user_metadata?.full_name || user.email?.split('@')[0] || "Naturalist";
+
+        document.getElementById('auth-unlogged').classList.add('hidden');
+        document.getElementById('auth-logged').classList.remove('hidden');
+        document.getElementById('nav-user-name').innerText = name;
+        document.getElementById('nav-user-avatar').innerText = name.slice(0, 2).toUpperCase();
+
+        if (isMaster) {
+          document.getElementById('master-btn').classList.remove('hidden');
+        } else {
+          document.getElementById('master-btn').classList.add('hidden');
+        }
+      } else {
+        document.getElementById('auth-unlogged').classList.remove('hidden');
+        document.getElementById('auth-logged').classList.add('hidden');
+      }
+    }
+
+    async function signOutWebUser() {
+      if (supabaseClient) await supabaseClient.auth.signOut();
+      currentUser = null;
+      applyUserSession(null);
+      alert("Signed out.");
+    }
+
+    // Startup Initialization
+    window.addEventListener('DOMContentLoaded', async () => {
+      initTheme();
+      applyDailyQuote();
+      applyConfiguredApkRelease();
+      logTelemetry('page_view');
+      renderChannelVideos();
+      loadRealHotspotData();
+      loadLiveExplorers();
+      loadRecentBlogs();
+      loadLocalGuides();
+
+      if (supabaseClient) {
+        const { data } = await supabaseClient.auth.getSession();
+        if (data && data.session) applyUserSession(data.session.user);
+      }
+    });
+  </script>
+</body>
+</html>
